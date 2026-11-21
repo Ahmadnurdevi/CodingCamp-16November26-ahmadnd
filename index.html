@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Productivity Dashboard</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <!--
+    Inline theme bootstrap — runs synchronously before first paint.
+    Reads the saved theme from localStorage and applies it to <html>
+    so the correct theme variables are active before any CSS paints,
+    eliminating the flash of wrong theme on reload.
+    A `no-transition` class is also added and removed after the first
+    frame so the body colour-transition doesn't animate on page load.
+  -->
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('pd_theme');
+        if (saved === 'dark' || saved === 'light') {
+          document.documentElement.setAttribute('data-theme', saved);
+        }
+      } catch (e) { /* localStorage unavailable — keep default "light" */ }
+      // Suppress CSS transitions during the initial theme application
+      document.documentElement.classList.add('no-transition');
+      window.addEventListener('load', function () {
+        requestAnimationFrame(function () {
+          document.documentElement.classList.remove('no-transition');
+        });
+      });
+    })();
+  </script>
+</head>
+<body>
+  <!-- Storage unavailable warning banner (hidden by default) -->
+  <div id="storage-warning" class="warning-banner" role="alert" hidden>
+    ⚠️ Local storage is unavailable. Your data will not be saved between sessions.
+  </div>
+
+  <header class="app-header">
+    <h1 class="app-title">Productivity Dashboard</h1>
+    <button id="theme-toggle" class="btn btn-icon" aria-label="Toggle light/dark theme" title="Toggle theme">
+      <span class="theme-icon">🌙</span>
+    </button>
+  </header>
+
+  <main class="dashboard-grid">
+
+    <!-- Greeting Widget -->
+    <section id="greeting-section" class="widget widget--greeting" aria-label="Greeting">
+      <div class="greeting-display">
+        <p id="greeting-time" class="greeting-time">--:--</p>
+        <p id="greeting-date" class="greeting-date">Loading…</p>
+        <h2 id="greeting-text" class="greeting-text">Hello</h2>
+      </div>
+      <div class="greeting-name-form">
+        <label for="greeting-name-input" class="form-label">Your name</label>
+        <div class="input-row">
+          <input
+            type="text"
+            id="greeting-name-input"
+            class="form-input"
+            placeholder="Enter your name"
+            maxlength="50"
+            aria-label="Custom name for greeting"
+          />
+          <button id="greeting-name-save" class="btn btn-primary">Save</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Focus Timer Widget -->
+    <section id="timer-section" class="widget widget--timer" aria-label="Focus Timer">
+      <h2 class="widget-title">Focus Timer</h2>
+      <div class="timer-display">
+        <p id="timer-time" class="timer-time" aria-live="polite" aria-label="Remaining time">25:00</p>
+      </div>
+      <div class="timer-controls">
+        <button id="timer-start" class="btn btn-primary">Start</button>
+        <button id="timer-stop"  class="btn btn-secondary" disabled>Stop</button>
+        <button id="timer-reset" class="btn btn-secondary">Reset</button>
+      </div>
+      <div class="timer-duration-form">
+        <label for="timer-duration-input" class="form-label">Duration (1–60 min)</label>
+        <div class="input-row">
+          <input
+            type="number"
+            id="timer-duration-input"
+            class="form-input form-input--short"
+            min="1"
+            max="60"
+            placeholder="25"
+            aria-label="Pomodoro duration in minutes"
+          />
+          <button id="timer-duration-save" class="btn btn-primary">Set</button>
+        </div>
+        <p id="timer-duration-error" class="form-error" role="alert" hidden></p>
+      </div>
+      <div id="timer-notification" class="timer-notification" role="alert" hidden>
+        🎉 Session complete! Take a break.
+      </div>
+    </section>
+
+    <!-- To-Do List Widget -->
+    <section id="todo-section" class="widget widget--todo" aria-label="To-Do List">
+      <h2 class="widget-title">
+        To-Do
+        <span id="todo-count-badge" class="count-badge" aria-label="Pending tasks">0</span>
+      </h2>
+      <div class="todo-add-form">
+        <div class="input-row">
+          <input
+            type="text"
+            id="todo-input"
+            class="form-input"
+            placeholder="Add a task…"
+            maxlength="200"
+            aria-label="New task description"
+          />
+          <button id="todo-add" class="btn btn-primary">Add</button>
+        </div>
+        <p id="todo-add-error" class="form-error" role="alert" hidden></p>
+      </div>
+      <ul id="todo-list" class="todo-list" aria-label="Task list"></ul>
+    </section>
+
+    <!-- Quick Links Widget -->
+    <section id="links-section" class="widget widget--links" aria-label="Quick Links">
+      <h2 class="widget-title">Quick Links</h2>
+      <div class="links-add-form">
+        <div class="input-row">
+          <input
+            type="text"
+            id="links-label-input"
+            class="form-input"
+            placeholder="Label"
+            maxlength="50"
+            aria-label="Link label"
+          />
+          <input
+            type="url"
+            id="links-url-input"
+            class="form-input"
+            placeholder="https://example.com"
+            aria-label="Link URL"
+          />
+          <button id="links-add" class="btn btn-primary">Add</button>
+        </div>
+        <p id="links-add-error" class="form-error" role="alert" hidden></p>
+      </div>
+      <div id="links-list" class="links-list" aria-label="Saved links"></div>
+    </section>
+
+  </main>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
